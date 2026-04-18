@@ -1,0 +1,10 @@
+# Set Railway root to `admin/lore-master-admin`.
+# Build args: NEXT_PUBLIC_GOOGLE_CLIENT_ID, NEXT_PUBLIC_API_URL (your backend URL).
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/"
+restartPolicyType = "ON_FAILURE"
