@@ -1,0 +1,12 @@
+# Set Railway service root directory to this folder (`functions`).
+# Link Railway Postgres; DATABASE_URL is injected automatically when referenced.
+# Set: FIREBASE_SERVICE_ACCOUNT_JSON (single-line JSON for Firebase Admin Auth).
+# Optional: CORS_ORIGINS (comma list or *). PORT is set by Railway.
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/health"
+restartPolicyType = "ON_FAILURE"

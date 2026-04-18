@@ -1,0 +1,48 @@
+{
+  "name": "functions",
+  "scripts": {
+    "lint": "echo 'Skipping lint for deployment'",
+    "postinstall": "prisma generate",
+    "build": "prisma generate && tsc",
+    "build:watch": "tsc --watch",
+    "start": "node lib/server.js",
+    "db:migrate": "prisma migrate deploy",
+    "db:push": "prisma db push",
+    "setup-admin": "npm run build && node lib/scripts/setup-admin.js",
+    "seed-data-simple": "node src/scripts/seed-data.js"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/server.js",
+  "dependencies": {
+    "@types/multer": "^2.0.0",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "csv-parser": "^3.2.0",
+    "express": "^4.21.2",
+    "google-auth-library": "^9.15.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mammoth": "^1.10.0",
+    "multer": "^2.0.2",
+    "prisma": "^6.3.1",
+    "@prisma/client": "^6.3.1",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  },
+  "private": true
+}

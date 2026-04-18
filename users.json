@@ -1,0 +1,25 @@
+{"users": [
+{
+  "localId": "BPMy6HeaEPgeYMQzMSyrYChTf3E3",
+  "email": "admin@loremaster.com",
+  "emailVerified": false,
+  "passwordHash": "lzjejviG2sYYvmVZWdrnsnJZhi52ohalZuH7u8axe173RuS2ay3DtxtuvpzWibW1CvwB3qYES+QAuHApWYs+zQ==",
+  "salt": "sHnM1znl5vU9Ng==",
+  "displayName": "Admin",
+  "lastSignedInAt": "1754717621648",
+  "createdAt": "1754405307519",
+  "disabled": false,
+  "customAttributes": "{\"admin\":true}",
+  "providerUserInfo": []
+},
+{
+  "localId": "IZ8fv2K6wDTI38U740tVJZNiNly2",
+  "email": "mickmickasis123@gmail.com",
+  "emailVerified": false,
+  "passwordHash": "3Ez0R066ToQ13npbYTivBRuSlD2T2s/2iu8QxWsPNOaNXuCf9mDqJdoMu9K4Cx6BPZULOImyq+Dx5fLjSmoHdA==",
+  "salt": "bjns0FalIk4KiA==",
+  "lastSignedInAt": "1754410368972",
+  "createdAt": "1754308384065",
+  "disabled": false,
+  "providerUserInfo": []
+}]}

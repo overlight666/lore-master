@@ -1,0 +1,77 @@
+/**
+ * Lore Master Backend API
+ * A comprehensive quiz game backend with user management, energy system, and leaderboards
+ */
+
+import { setGlobalOptions } from "firebase-functions";
+import { onRequest } from "firebase-functions/v2/https";
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+
+// Import routes
+import authRoutes from './routes/auth';
+import gameRoutes from './routes/game';
+import quizRoutes from './routes/quiz';
+import energyRoutes from './routes/energy';
+import leaderboardRoutes from './routes/leaderboard';
+import storeRoutes from './routes/store';
+import aiRoutes from './routes/ai';
+
+// Import middleware
+import { authenticateToken } from './middleware/auth';
+
+// For cost control, you can set the maximum number of containers that can be
+// running at the same time. This helps mitigate the impact of unexpected
+// traffic spikes by instead downgrading performance. This limit is a
+// per-function limit. You can override the limit for each function using the
+// `maxInstances` option in the function's options, e.g.
+// `onRequest({ maxInstances: 5 }, (req, res) => { ... })`.
+// NOTE: setGlobalOptions does not apply to functions using the v1 API. V1
+// functions should each use functions.runWith({ maxInstances: 10 }) instead.
+// In the v1 API, each function can only serve one request per container, so
+// this will be the maximum concurrent request count.
+setGlobalOptions({maxInstances: 10});
+
+// Create Express app
+const app = express();
+
+// Middleware
+app.use(helmet()); // Security headers
+app.use(cors({ origin: true })); // Enable CORS for all origins
+app.use(express.json()); // Parse JSON bodies
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+
+// Health check endpoint
+app.get('/health', (req: express.Request, res: express.Response) => {
+  res.status(200).json({ 
+    status: 'healthy', 
+    timestamp: new Date().toISOString(),
+    service: 'Lore Master API'
+  });
+});
+
+// Public routes (no authentication required)
+app.use('/auth', authRoutes);
+
+// Protected routes (authentication required)
+app.use('/game', authenticateToken, gameRoutes);
+app.use('/quiz', authenticateToken, quizRoutes);
+app.use('/energy', authenticateToken, energyRoutes);
+app.use('/leaderboard', authenticateToken, leaderboardRoutes);
+app.use('/store', authenticateToken, storeRoutes);
+app.use('/ai', authenticateToken, aiRoutes);
+
+// 404 handler
+app.use('*', (req: express.Request, res: express.Response) => {
+  res.status(404).json({ error: 'Endpoint not found' });
+});
+
+// Error handler
+app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error('Unhandled error:', error);
+  res.status(500).json({ error: 'Internal server error' });
+});
+
+// Export the Express app as a Firebase Function
+export const api = onRequest(app);

@@ -1,0 +1,16 @@
+/**
+ * Game rules (shared by API routes).
+ */
+export const GAME_CONSTANTS = {
+  MAX_ENERGY: 6,
+  ENERGY_REGENERATION_HOURS: 4,
+  MAX_ADS_PER_DAY: 5,
+  QUESTIONS_PER_LEVEL: 10,
+  LEVELS_PER_SUBTOPIC: 10,
+  QUESTIONS_PER_DIFFICULTY_POOL: 50,
+  PASSING_SCORE: 80,
+  PERFECT_SCORE: 100,
+  QUESTION_TIME_LIMIT: 90,
+  LEADERBOARD_SIZE: 50,
+  DIFFICULTY_LEVELS: ['easy', 'medium', 'hard'] as const,
+} as const;

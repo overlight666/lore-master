@@ -1,0 +1,211 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String   @id
+  email             String
+  password_hash     String?
+  username          String
+  energy            Int      @default(6)
+  energy_updated_at DateTime @map("energy_updated_at")
+  created_at        DateTime @map("created_at")
+  updated_at        DateTime @map("updated_at")
+  role              String?
+  permissions       Json?
+  is_active         Boolean  @default(true) @map("is_active")
+
+  quiz_attempts QuizAttempt[]
+  ads_watched   AdsWatched[]
+  lifelines     UserLifeline[]
+  purchases     Purchase[]
+
+  @@index([email])
+}
+
+model Topic {
+  id               String   @id @default(uuid())
+  name             String
+  description      String?
+  icon_url         String?  @map("icon_url")
+  color            String?
+  order            Int      @default(0)
+  is_active        Boolean  @default(true) @map("isActive")
+  total_subtopics  Int      @default(0) @map("totalSubtopics")
+  difficulty       String?
+  estimated_time   Int?     @map("estimatedTime")
+  tags             Json?
+  requirements     Json?
+  created_at       DateTime @map("created_at")
+  updated_at       DateTime @map("updated_at")
+
+  @@index([is_active, order])
+}
+
+model Subtopic {
+  id             String   @id @default(uuid())
+  topic_id       String   @map("topic_id")
+  name           String
+  description    String?
+  icon_url       String?  @map("icon_url")
+  color          String?
+  order          Int      @default(0)
+  is_active      Boolean  @default(true) @map("isActive")
+  total_levels   Int      @default(0) @map("totalLevels")
+  difficulty     String?
+  estimated_time Int?     @map("estimatedTime")
+  tags           Json?
+  requirements   Json?
+  created_at     DateTime @map("created_at")
+  updated_at     DateTime @map("updated_at")
+
+  @@index([topic_id, is_active])
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  topic_id    String    @map("topic_id")
+  subtopic_id String    @map("subtopic_id")
+  name        String
+  description String?
+  icon_url    String?   @map("icon_url")
+  color       String?
+  order       Int?
+  is_active   Boolean   @default(true) @map("isActive")
+  created_at  DateTime? @map("createdAt")
+  updated_at  DateTime? @map("updatedAt")
+
+  @@index([subtopic_id, is_active])
+}
+
+model Level {
+  id              String   @id @default(uuid())
+  topic_id        String   @map("topic_id")
+  category_id     String   @map("category_id")
+  subtopic_id     String   @map("subtopic_id")
+  level           Int
+  name            String?
+  description     String?
+  difficulty      String?
+  estimated_time  Int?     @map("estimatedTime")
+  total_questions Int      @default(10) @map("totalQuestions")
+  passing_score   Int      @default(80) @map("passingScore")
+  is_active       Boolean  @default(true) @map("isActive")
+  requirements    Json?
+  created_at      DateTime @map("created_at")
+  updated_at      DateTime @map("updated_at")
+
+  @@index([category_id, level, is_active])
+  @@index([subtopic_id, is_active])
+}
+
+model Question {
+  id              String    @id @default(uuid())
+  topic_id        String?   @map("topic_id")
+  subtopic_id     String?   @map("subtopic_id")
+  category_id     String?   @map("category_id")
+  level_id        String?   @map("level_id")
+  level           Int?
+  difficulty      Int?
+  difficulty_word String?   @map("difficulty_word")
+  text            String?
+  question        String?
+  option_a        String?   @map("option_a")
+  option_b        String?   @map("option_b")
+  option_c        String?   @map("option_c")
+  option_d        String?   @map("option_d")
+  correct_option  String?   @map("correct_option")
+  choices         Json?
+  correct_answer  String?   @map("correct_answer")
+  explanation     String?
+  is_active       Boolean   @default(true) @map("isActive")
+  tags            Json?
+  created_at      DateTime? @map("created_at")
+  updated_at      DateTime? @map("updated_at")
+
+  @@index([subtopic_id, difficulty_word])
+  @@index([category_id, level])
+}
+
+model QuizAttempt {
+  id              String   @id
+  user_id         String   @map("user_id")
+  level_id        String   @map("level_id")
+  score           Float
+  time_taken      Int      @map("time_taken")
+  completed_at    DateTime @map("completed_at")
+  used_5050       Boolean  @map("used_5050")
+  used_ai_hint    Boolean  @map("used_ai_hint")
+  energy_consumed Boolean  @map("energy_consumed")
+
+  user    User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  answers UserAnswer[]
+
+  @@index([user_id, completed_at])
+  @@index([level_id])
+}
+
+model UserAnswer {
+  id              String   @id
+  attempt_id      String   @map("attempt_id")
+  question_id     String   @map("question_id")
+  selected_option String   @map("selected_option")
+  is_correct      Boolean  @map("is_correct")
+  answered_at     DateTime @map("answered_at")
+
+  attempt QuizAttempt @relation(fields: [attempt_id], references: [id], onDelete: Cascade)
+
+  @@index([attempt_id])
+}
+
+model AdsWatched {
+  id         String   @id
+  user_id    String   @map("user_id")
+  watched_at DateTime @map("watched_at")
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+model UserLifeline {
+  id         String   @id @default(uuid())
+  user_id    String   @map("user_id")
+  type       String
+  quantity   Int      @default(0)
+  updated_at DateTime @map("updated_at")
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, type])
+}
+
+model Purchase {
+  id           String   @id
+  user_id      String   @map("user_id")
+  item_type    String   @map("item_type")
+  quantity     Int
+  price        Float
+  purchased_at DateTime @map("purchased_at")
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id, purchased_at])
+}
+
+model AdminAuditLog {
+  id         String   @id @default(uuid())
+  action     String?
+  user_id    String?  @map("user_id")
+  resource   String?
+  details    Json?
+  created_at DateTime @default(now()) @map("created_at")
+
+  @@index([created_at])
+}

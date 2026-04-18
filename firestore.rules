@@ -1,0 +1,85 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'super_admin'];
+    }
+    
+    // Users can access their own document, admins can access all
+    match /users/{userId} {
+      allow read, write: if request.auth != null && 
+        (request.auth.uid == userId || isAdmin());
+    }
+    
+    // Topics are publicly readable, admins can write
+    match /topics/{topicId} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+    
+    // Subtopics are publicly readable, admins can write
+    match /subtopics/{subtopicId} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+    
+    // Levels are publicly readable, admins can write
+    match /levels/{levelId} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+    
+    // Questions are publicly readable, admins can write
+    match /questions/{questionId} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+    
+    // Quiz attempts - users can access their own, admins can access all
+    match /quiz_attempts/{attemptId} {
+      allow read, write: if request.auth != null && 
+        (resource.data.user_id == request.auth.uid || isAdmin());
+      allow create: if request.auth != null && 
+        (request.resource.data.user_id == request.auth.uid || isAdmin());
+    }
+    
+    // User answers - users can access their own, admins can access all
+    match /user_answers/{answerId} {
+      allow read, write: if request.auth != null && isAdmin();
+      // Regular users access handled by backend through attempt_id
+    }
+    
+    // Ads watched - users can access their own, admins can access all
+    match /ads_watched/{adId} {
+      allow read, write: if request.auth != null && 
+        (resource.data.user_id == request.auth.uid || isAdmin());
+      allow create: if request.auth != null && 
+        (request.resource.data.user_id == request.auth.uid || isAdmin());
+    }
+    
+    // User lifelines - users can access their own, admins can access all
+    match /user_lifelines/{lifelineId} {
+      allow read, write: if request.auth != null && 
+        (resource.data.user_id == request.auth.uid || isAdmin());
+      allow create: if request.auth != null && 
+        (request.resource.data.user_id == request.auth.uid || isAdmin());
+    }
+    
+    // Purchases - users can access their own, admins can access all
+    match /purchases/{purchaseId} {
+      allow read, write: if request.auth != null && 
+        (resource.data.user_id == request.auth.uid || isAdmin());
+      allow create: if request.auth != null && 
+        (request.resource.data.user_id == request.auth.uid || isAdmin());
+    }
+    
+    // Default deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
