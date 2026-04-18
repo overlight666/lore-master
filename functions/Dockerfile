@@ -3,10 +3,10 @@ FROM node:22-bookworm-slim
 
 WORKDIR /app
 
+# prisma/ must exist before npm ci — postinstall runs prisma generate
 COPY package.json package-lock.json ./
-RUN npm ci
-
 COPY prisma ./prisma
+RUN npm ci
 COPY tsconfig.json ./
 COPY src ./src
 
