@@ -28,6 +28,6 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 USER nextjs
 EXPOSE 3000
-ENV PORT=3000
-ENV HOSTNAME=0.0.0.0
-CMD ["node", "server.js"]
+# Docker sets HOSTNAME to the container id (overrides ENV). Next standalone binds
+# process.env.HOSTNAME — must be 0.0.0.0 or the app won't accept Railway's proxy.
+CMD ["sh", "-c", "export HOSTNAME=0.0.0.0 && exec node server.js"]
