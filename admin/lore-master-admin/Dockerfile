@@ -8,6 +8,8 @@ FROM node:22-bookworm-slim AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# Next.js may have no public/ in repo; standalone image COPY requires the path to exist
+RUN mkdir -p public
 ENV NEXT_TELEMETRY_DISABLED=1
 ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID
 ARG NEXT_PUBLIC_API_URL
