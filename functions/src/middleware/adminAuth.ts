@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyGoogleIdToken } from '../auth/googleToken';
+import { resolveAdminPanelUser } from '../auth/adminAllowlist';
 import { prisma } from '../prisma';
 
 declare global {
@@ -27,17 +28,9 @@ export const authenticateAdmin = async (req: Request, res: Response, next: NextF
     const token = authHeader.split(' ')[1];
     const g = await verifyGoogleIdToken(token);
 
-    const userRow = await prisma.user.findFirst({
-      where: {
-        OR: [{ id: g.sub }, ...(g.email ? [{ email: g.email }] : [])],
-      },
-    });
+    const userRow = await resolveAdminPanelUser(g);
 
     if (!userRow) {
-      return res.status(401).json({ error: 'User not found' });
-    }
-
-    if (!userRow.role || (userRow.role !== 'admin' && userRow.role !== 'super_admin')) {
       return res.status(403).json({ error: 'Insufficient permissions. Admin access required.' });
     }
 

@@ -58,13 +58,28 @@ export function createApp(): express.Application {
     res.status(200).send();
   });
 
+  const healthPayload = {
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    service: 'Lore Master API',
+    version: '2.0.0',
+    database: 'postgresql',
+  };
+
   app.get('/health', (req: express.Request, res: express.Response) => {
+    res.status(200).json(healthPayload);
+  });
+
+  // Alias for load balancers / docs that expect /api/health
+  app.get('/api/health', (req: express.Request, res: express.Response) => {
+    res.status(200).json(healthPayload);
+  });
+
+  app.get('/', (req: express.Request, res: express.Response) => {
     res.status(200).json({
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
       service: 'Lore Master API',
-      version: '2.0.0',
-      database: 'postgresql',
+      health: '/health',
+      healthAlt: '/api/health',
     });
   });
 

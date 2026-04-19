@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { verifyGoogleIdToken } from '../../auth/googleToken';
+import { resolveAdminPanelUser } from '../../auth/adminAllowlist';
 import { prisma } from '../../prisma';
 import { authenticateAdmin } from '../../middleware/adminAuth';
 
@@ -15,17 +16,9 @@ router.post('/login', async (req, res) => {
 
     const g = await verifyGoogleIdToken(idToken);
 
-    const userRow = await prisma.user.findFirst({
-      where: {
-        OR: [{ id: g.sub }, ...(g.email ? [{ email: g.email }] : [])],
-      },
-    });
+    const userRow = await resolveAdminPanelUser(g);
 
     if (!userRow) {
-      return res.status(401).json({ error: 'User not found. Sign in with Google from the app first.' });
-    }
-
-    if (!userRow.role || (userRow.role !== 'admin' && userRow.role !== 'super_admin')) {
       return res.status(403).json({ error: 'Admin access required' });
     }
 

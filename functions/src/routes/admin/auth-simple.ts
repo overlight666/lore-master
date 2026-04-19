@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { verifyGoogleIdToken } from '../../auth/googleToken';
-import { prisma } from '../../prisma';
+import { resolveAdminPanelUser } from '../../auth/adminAllowlist';
 
 const router = Router();
 
@@ -16,17 +16,9 @@ router.post('/login', async (req, res) => {
 
     const g = await verifyGoogleIdToken(idToken);
 
-    const userRow = await prisma.user.findFirst({
-      where: {
-        OR: [{ id: g.sub }, ...(g.email ? [{ email: g.email }] : [])],
-      },
-    });
+    const userRow = await resolveAdminPanelUser(g);
 
     if (!userRow) {
-      return res.status(401).json({ error: 'User not found' });
-    }
-
-    if (!userRow.role || (userRow.role !== 'admin' && userRow.role !== 'super_admin')) {
       return res.status(403).json({ error: 'Admin access required' });
     }
 
@@ -77,17 +69,9 @@ router.get('/me', async (req, res) => {
     const idToken = authHeader.split('Bearer ')[1];
     const g = await verifyGoogleIdToken(idToken);
 
-    const userRow = await prisma.user.findFirst({
-      where: {
-        OR: [{ id: g.sub }, ...(g.email ? [{ email: g.email }] : [])],
-      },
-    });
+    const userRow = await resolveAdminPanelUser(g);
 
     if (!userRow) {
-      return res.status(401).json({ error: 'User not found' });
-    }
-
-    if (!userRow.role || (userRow.role !== 'admin' && userRow.role !== 'super_admin')) {
       return res.status(403).json({ error: 'Admin access required' });
     }
 
@@ -124,14 +108,10 @@ router.post('/refresh', async (req, res) => {
     const idToken = authHeader.split('Bearer ')[1];
     const g = await verifyGoogleIdToken(idToken);
 
-    const userRow = await prisma.user.findFirst({
-      where: {
-        OR: [{ id: g.sub }, ...(g.email ? [{ email: g.email }] : [])],
-      },
-    });
+    const userRow = await resolveAdminPanelUser(g);
 
     if (!userRow) {
-      return res.status(401).json({ error: 'User not found' });
+      return res.status(403).json({ error: 'Admin access required' });
     }
 
     res.json({

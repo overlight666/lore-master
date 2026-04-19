@@ -1,5 +1,10 @@
-# Set Railway root to `admin/lore-master-admin`.
-# Build args: NEXT_PUBLIC_GOOGLE_CLIENT_ID, NEXT_PUBLIC_API_URL (your backend URL).
+# Root: `admin/lore-master-admin`. Build vars: NEXT_PUBLIC_GOOGLE_CLIENT_ID, NEXT_PUBLIC_API_URL.
+#
+# PORT: Next listens on Railway's $PORT (usually 8080). In Railway → Networking → your public
+# domain, the target port MUST match (8080). If the UI shows "→ Port 3000" but logs show
+# "Network: http://0.0.0.0:8080", change the domain mapping to 8080 or you will get HTTP 502.
+#
+# NEXT_PUBLIC_API_URL must be the BACKEND service URL, not this admin URL.
 
 [build]
 builder = "DOCKERFILE"

@@ -27,7 +27,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 USER nextjs
-# Railway commonly uses PORT=8080; EXPOSE documents the default (PORT is set at runtime)
+# Listen port = Railway $PORT (commonly 8080). Match this in Railway → Networking (not 3000).
 EXPOSE 8080
 # Docker sets HOSTNAME to the container id. Next standalone uses HOSTNAME for bind address.
 CMD ["sh", "-c", "echo lore-admin starting PORT=${PORT} HOSTNAME_before=${HOSTNAME-} && export HOSTNAME=0.0.0.0 && exec node server.js"]
