@@ -1,7 +1,5 @@
-# Set Railway service root directory to this folder (`functions`).
-# Link Railway Postgres; DATABASE_URL is injected automatically when referenced.
-# Set: FIREBASE_SERVICE_ACCOUNT_JSON (single-line JSON for Firebase Admin Auth).
-# Optional: CORS_ORIGINS (comma list or *). PORT is set by Railway.
+# Root = `functions`. Link Postgres → DATABASE_URL on the service.
+# Migrations run on every deploy/start via `npm start` (prisma migrate deploy && node lib/server.js).
 
 [build]
 builder = "DOCKERFILE"

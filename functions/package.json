@@ -5,7 +5,7 @@
     "postinstall": "prisma generate",
     "build": "prisma generate && tsc",
     "build:watch": "tsc --watch",
-    "start": "node lib/server.js",
+    "start": "prisma migrate deploy && node lib/server.js",
     "db:migrate": "prisma migrate deploy",
     "db:push": "prisma db push",
     "setup-admin": "npm run build && node lib/scripts/setup-admin.js",

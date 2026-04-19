@@ -15,5 +15,5 @@ RUN npm run build
 ENV NODE_ENV=production
 EXPOSE 8080
 
-# Railway sets PORT; run migrations then start HTTP server
-CMD ["sh", "-c", "npx prisma migrate deploy && node lib/server.js"]
+# Migrations then API (same as npm start — DATABASE_URL required at runtime)
+CMD ["npm", "start"]
